@@ -1,0 +1,45 @@
+bseok 
+- File manual book operasional: manualbook.html
+- Link akses manual book sudah ditambahkan di README.md
+
+Cara akses dan download:
+1. Jalankan aplikasi seperti biasa:
+- `py backend.py`
+- buka `http://localhost:8000`
+
+2. Buka manual book:
+- `http://localhost:8000/manualbook.html`
+
+3. Di halaman manual book tersedia:
+- tombol Cetak / Simpan PDF (untuk simpan jadi PDF)
+- tombol Unduh File Manual (HTML)
+
+Isi manual book mencakup:
+- langkah menjalankan aplikasi
+- alur user dan admin
+- manajemen pengguna
+- rekap dan laporan
+- audit log
+- backup/restore database
+- troubleshooting cepat
+
+
+
+cara menggunakan local host
+
+Caranya:
+1. Jalankan server dengan host 0.0.0.0, bukan 127.0.0.1.
+2. Cari IP WiFi laptop/PC Anda (contoh 192.168.1.10).
+3. Akses dari perangkat lain di jaringan yang sama lewat:
+http://IP_WIFI_ANDA:8000
+Contoh:
+http://192.168.1.10:8000
+
+Untuk project Anda, perintah jalannya seperti ini di PowerShell:
+$env:HOST="0.0.0.0"; py backend.py
+
+Catatan penting:
+- Pastikan firewall Windows mengizinkan Python/port 8000.
+- HP/laptop lain harus berada di WiFi yang sama.
+- Jika tidak bisa akses, biasanya karena firewall atau jaringan tamu (guest network) terisolasi.
+

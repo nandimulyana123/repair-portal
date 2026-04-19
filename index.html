@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portal Pengajuan Perbaikan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="vendor/jspdf.umd.min.js"></script>
+    <script src="vendor/jspdf.plugin.autotable.min.js"></script>
+  </head>
+  <body>
+    <div class="bg-orb orb-one"></div>
+    <div class="bg-orb orb-two"></div>
+
+    <main class="shell">
+      <section id="loginPage" class="login-page">
+        <div class="login-panel">
+          <div class="brand-lockup">
+            <div class="brand-mark">PR</div>
+            <div>
+              <p id="landingEyebrow" class="eyebrow">Sistem Internal</p>
+              <h1 id="landingTitle">Portal Pengajuan Perbaikan</h1>
+              <p id="landingSubtitle" class="subtitle">
+                Sistem resmi untuk pengajuan, pemantauan, dan rekap perbaikan di lingkungan kerja.
+              </p>
+            </div>
+          </div>
+
+          <div class="feature-grid">
+            <article>
+              <span>01</span>
+              <h3>Pengajuan Terpusat</h3>
+              <p>Permintaan perbaikan dicatat dalam satu alur kerja yang rapi.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Verifikasi Admin</h3>
+              <p>Status, alasan proses, dan tindak lanjut dapat dikelola oleh admin.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>Laporan Resmi</h3>
+              <p>Rekap bulanan siap dicetak menjadi PDF dengan kop surat dan tanda tangan.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="login-card">
+          <h2>Masuk ke Sistem</h2>
+          <p class="card-copy">Gunakan akun resmi yang sudah didaftarkan untuk mengakses aplikasi.</p>
+
+          <form id="loginForm" class="form-stack">
+            <label>
+              Nama pengguna
+              <input id="loginUsername" type="text" placeholder="Masukkan username" autocomplete="username" required />
+            </label>
+            <label>
+              Kata sandi
+              <div class="password-row">
+                <input id="loginPassword" type="password" placeholder="Masukkan password" autocomplete="current-password" required />
+                <button id="togglePasswordBtn" class="ghost-btn" type="button">Lihat</button>
+              </div>
+            </label>
+
+            <div class="login-options">
+              <label class="checkbox-row">
+                <input id="rememberSession" type="checkbox" checked />
+                Ingat sesi di browser ini
+              </label>
+            </div>
+
+            <button type="submit" class="primary-btn">Masuk</button>
+            <p id="loginHint" class="login-hint">Akses hanya untuk pengguna yang telah terdaftar.</p>
+            <p id="loginError" class="error-text" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <section id="appPage" class="app-page hidden">
+        <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Portal Operasional</p>
+            <h2>Pengajuan Perbaikan & Rekap Bulanan</h2>
+          </div>
+          <div class="user-chip">
+            <button id="logoutBtn" class="ghost-btn" type="button">Keluar</button>
+          </div>
+        </header>
+
+        <nav class="tabs">
+          <button class="tab-btn active" data-target="dashboardSection" type="button">Dashboard</button>
+          <button id="requestTabBtn" class="tab-btn" data-target="requestSection" type="button">Pengajuan</button>
+          <button class="tab-btn" data-target="recapSection" type="button">Rekap Bulanan</button>
+          <button id="adminTabBtn" class="tab-btn" data-target="adminSection" type="button">
+            Admin Panel
+            <span id="adminNotifBadge" class="notif-badge hidden">0</span>
+          </button>
+        </nav>
+
+        <section id="dashboardSection" class="panel section-stack">
+          <div class="stat-grid">
+            <article class="stat-card">
+              <span>Total Pengajuan</span>
+              <strong id="statTotal">0</strong>
+            </article>
+            <article class="stat-card">
+              <span>Menunggu</span>
+              <strong id="statPending">0</strong>
+            </article>
+            <article class="stat-card">
+              <span>Diproses</span>
+              <strong id="statProgress">0</strong>
+            </article>
+            <article class="stat-card">
+              <span>Selesai</span>
+              <strong id="statDone">0</strong>
+            </article>
+          </div>
+
+          <div class="grid-2">
+            <article class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Ringkasan</p>
+                  <h3>Perhatian Hari Ini</h3>
+                </div>
+                <span id="currentMonthBadge" class="badge">-</span>
+              </div>
+              <div id="recentSummary" class="summary-list"></div>
+            </article>
+
+            <article class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Aktivitas</p>
+                  <h3>Status Terbaru</h3>
+                </div>
+              </div>
+              <div id="latestTimeline" class="timeline"></div>
+            </article>
+          </div>
+        </section>
+
+        <section id="requestSection" class="panel hidden section-stack">
+          <div class="grid-2 align-start">
+            <article class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Form Pengajuan</p>
+                  <h3>Buat Laporan Perbaikan</h3>
+                </div>
+              </div>
+              <form id="requestForm" class="form-grid">
+                <label>
+                  Judul perbaikan
+                  <input id="requestTitle" type="text" placeholder="Contoh: AC ruang meeting mati" required />
+                </label>
+                <label>
+                  Kategori
+                  <select id="requestCategory" required>
+                    <option value="">Pilih kategori</option>
+                    <option>PC</option>
+                    <option>Printer</option>
+                    <option>Internet/WiFi</option>
+                    <option>Perbaikan Pasien/Tindakan</option>
+                  </select>
+                </label>
+                <label>
+                  Lokasi
+                  <input id="requestLocation" type="text" placeholder="Contoh: Lantai 2 - Ruang Finance" required />
+                </label>
+                <label>
+                  Unit
+                  <input id="requestUnit" type="text" placeholder="Contoh: Finance" required />
+                </label>
+                <label>
+                  Prioritas
+                  <select id="requestPriority" required>
+                    <option>Rendah</option>
+                    <option selected>Sedang</option>
+                    <option>Tinggi</option>
+                    <option>Kritis</option>
+                  </select>
+                </label>
+                <label class="full-width">
+                  Deskripsi
+                  <textarea id="requestDescription" rows="5" placeholder="Jelaskan kerusakan atau kebutuhan perbaikan" required></textarea>
+                </label>
+                <button type="submit" class="primary-btn full-width">Kirim Pengajuan</button>
+              </form>
+            </article>
+
+            <article class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Daftar Saya</p>
+                  <h3>Pengajuan yang Saya Kirim</h3>
+                </div>
+                <span id="myRequestCount" class="badge">0</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Judul</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="myRequestsTable"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="adminSection" class="panel hidden section-stack">
+          <article class="panel-card">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Panel Admin</p>
+                <h3>Kelola Semua Pengajuan</h3>
+              </div>
+            </div>
+            <div class="report-settings">
+              <h4>Pengaturan Tampilan Halaman Depan</h4>
+              <form id="landingSettingsForm" class="form-grid report-grid">
+                <label>
+                  Judul utama
+                  <input id="landingTitleInput" type="text" placeholder="Portal Pengajuan Perbaikan" />
+                </label>
+                <label>
+                  Teks pembuka
+                  <input id="landingEyebrowInput" type="text" placeholder="Localhost App" />
+                </label>
+                <label class="full-width">
+                  Deskripsi
+                  <textarea id="landingSubtitleInput" rows="3" placeholder="Aplikasi lokal untuk..."></textarea>
+                </label>
+                <label>
+                  Tema warna
+                  <select id="landingThemeInput">
+                    <option value="teal">Teal Default</option>
+                    <option value="blue">Blue Clean</option>
+                    <option value="green">Green Fresh</option>
+                    <option value="amber">Amber Warm</option>
+                  </select>
+                </label>
+                <div class="report-actions full-width">
+                  <button id="saveLandingSettingsBtn" type="submit" class="primary-btn">Simpan Tampilan</button>
+                  <p class="report-hint">Perubahan ini langsung tampil di halaman login.</p>
+                </div>
+              </form>
+            </div>
+            <div class="report-settings">
+              <h4>Pengaturan Laporan PDF</h4>
+              <form id="adminReportForm" class="form-grid report-grid">
+                <label class="full-width">
+                  Kop surat
+                  <textarea id="reportLetterhead" rows="4" placeholder="Masukkan nama instansi, alamat, dan detail kop surat"></textarea>
+                </label>
+                <label>
+                  Nama penanda tangan
+                  <input id="reportSignerName" type="text" placeholder="Contoh: dr. Sinta Rahmawati" />
+                </label>
+                <label>
+                  Jabatan penanda tangan
+                  <input id="reportSignerRole" type="text" placeholder="Contoh: Kepala Ruangan / Manajer" />
+                </label>
+                <label>
+                  NIP / ID (opsional)
+                  <input id="reportSignerId" type="text" placeholder="Contoh: 12345678" />
+                </label>
+                <div class="report-actions full-width">
+                  <button id="saveReportSettingsBtn" type="submit" class="primary-btn">Simpan Pengaturan</button>
+                  <p class="report-hint">Pengaturan ini akan dipakai saat admin mengunduh laporan PDF.</p>
+                </div>
+              </form>
+            </div>
+            <div id="adminNewAlert" class="admin-alert hidden">
+              <span>Ada <strong id="adminNewCount">0</strong> permintaan perbaikan baru.</span>
+              <button id="markAdminSeenBtn" class="ghost-btn" type="button">Tandai Sudah Dilihat</button>
+            </div>
+            <div class="report-settings">
+              <h4>Manajemen Pengguna</h4>
+              <form id="createUserForm" class="form-grid report-grid">
+                <label>
+                  Username
+                  <input id="newUsername" type="text" placeholder="contoh: petugas1" required />
+                </label>
+                <label>
+                  Nama lengkap
+                  <input id="newName" type="text" placeholder="Nama pengguna" required />
+                </label>
+                <label>
+                  Role
+                  <select id="newRole" required>
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </label>
+                <label>
+                  Password awal
+                  <input id="newPassword" type="password" placeholder="8+ karakter, A-z, angka, simbol" required />
+                </label>
+                <div class="report-actions full-width">
+                  <div class="table-actions">
+                    <button id="createUserBtn" type="submit" class="primary-btn">Tambah Pengguna</button>
+                    <button id="generateNewPasswordBtn" type="button" class="ghost-btn">Generate Password</button>
+                  </div>
+                  <p class="report-hint">Password wajib berisi huruf besar, huruf kecil, angka, dan simbol.</p>
+                </div>
+              </form>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Username</th>
+                      <th>Nama</th>
+                      <th>Role</th>
+                      <th>Status</th>
+                      <th>Dibuat</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminUsersTable"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="report-settings">
+              <h4>Audit Log Admin</h4>
+              <p class="report-hint">Menampilkan aktivitas admin terbaru untuk perubahan data penting.</p>
+              <div class="table-actions" style="margin-bottom: 10px;">
+                <button id="exportAuditCsvBtn" type="button" class="ghost-btn">Export Audit CSV</button>
+                <button id="exportAuditPdfBtn" type="button" class="ghost-btn">Export Audit PDF</button>
+              </div>
+              <div class="filter-bar audit-filter-bar">
+                <label>
+                  Admin
+                  <input id="auditAdminFilter" type="text" placeholder="Cari username admin" />
+                </label>
+                <label>
+                  Aksi
+                  <select id="auditActionFilter">
+                    <option value="all">Semua aksi</option>
+                    <option value="CREATE_USER">Buat Pengguna</option>
+                    <option value="RESET_PASSWORD">Ubah Password</option>
+                    <option value="SET_USER_ACTIVE">Ubah Status User</option>
+                    <option value="DELETE_USER">Hapus User</option>
+                    <option value="UPDATE_REQUEST">Update Request</option>
+                    <option value="RESET_DATABASE">Reset Database</option>
+                  </select>
+                </label>
+                <label>
+                  Tanggal
+                  <input id="auditDateFilter" type="date" />
+                </label>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Waktu</th>
+                      <th>Admin</th>
+                      <th>Aksi</th>
+                      <th>Target</th>
+                      <th>Detail</th>
+                    </tr>
+                  </thead>
+                  <tbody id="auditLogsTable"></tbody>
+                </table>
+              </div>
+              <div class="audit-pagination">
+                <button id="auditPrevPageBtn" type="button" class="mini-btn">Sebelumnya</button>
+                <span id="auditPageInfo" class="cell-muted">Halaman 1 / 1</span>
+                <button id="auditNextPageBtn" type="button" class="mini-btn">Berikutnya</button>
+              </div>
+            </div>
+            <div class="report-settings">
+              <h4>Aksi Sistem</h4>
+              <div class="report-actions">
+                <button id="resetSystemBtn" type="button" class="danger-btn">Reset Database ke Data Awal</button>
+                <p class="report-hint">Aksi ini menghapus data saat ini dan mengembalikan data default aplikasi.</p>
+              </div>
+            </div>
+            <div class="filter-bar">
+              <label>
+                Filter status
+                <select id="adminStatusFilter">
+                  <option value="active">Antrian Aktif (Diajukan + Diproses)</option>
+                  <option value="all" selected>Semua</option>
+                  <option value="Diajukan">Diajukan</option>
+                  <option value="Diproses">Diproses</option>
+                  <option value="Selesai">Selesai</option>
+                  <option value="Ditolak">Ditolak</option>
+                </select>
+              </label>
+              <label>
+                Filter bulan
+                <input id="adminMonthFilter" type="month" />
+              </label>
+              <label>
+                Cari
+                <input id="adminSearch" type="text" placeholder="Judul, lokasi, unit, atau nama" />
+              </label>
+            </div>
+            <div class="table-wrap admin-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Pemohon</th>
+                    <th>Unit</th>
+                    <th>Judul</th>
+                    <th>Lokasi</th>
+                    <th>Status</th>
+                    <th>Alasan Proses</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="adminRequestsTable"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section id="recapSection" class="panel hidden section-stack">
+          <article class="panel-card">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Rekap Bulanan</p>
+                <h3>Ringkasan Laporan</h3>
+              </div>
+              <button id="exportPdfBtn" class="ghost-btn" type="button">Unduh PDF</button>
+            </div>
+            <div class="filter-bar compact">
+              <label>
+                Bulan rekap
+                <input id="recapMonth" type="month" />
+              </label>
+            </div>
+            <div class="stat-grid small-gap">
+              <article class="stat-card">
+                <span>Total Bulan Ini</span>
+                <strong id="recapTotal">0</strong>
+              </article>
+              <article class="stat-card">
+                <span>Diajukan</span>
+                <strong id="recapPending">0</strong>
+              </article>
+              <article class="stat-card">
+                <span>Selesai</span>
+                <strong id="recapDone">0</strong>
+              </article>
+              <article class="stat-card">
+                <span>Rata-rata Selesai</span>
+                <strong id="recapResolution">0 hari</strong>
+              </article>
+            </div>
+
+            <article class="panel-card monthly-chart-card">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Grafik Bulanan</p>
+                  <h3>Tren Pengajuan 6 Bulan Terakhir</h3>
+                </div>
+              </div>
+              <div class="monthly-chart-legend">
+                <span><i class="legend-dot total"></i>Total Pengajuan</span>
+                <span><i class="legend-dot done"></i>Selesai</span>
+              </div>
+              <div id="recapTrendChart" class="monthly-chart"></div>
+            </article>
+          </article>
+
+          <div class="grid-2 align-start">
+            <article class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Kategori</p>
+                  <h3>Penyebaran Pengajuan</h3>
+                </div>
+              </div>
+              <div id="categoryBreakdown" class="breakdown-list"></div>
+            </article>
+
+            <article class="panel-card">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Daftar Bulanan</p>
+                  <h3>Semua Laporan pada Bulan Terpilih</h3>
+                </div>
+                <span id="recapCountBadge" class="badge">0</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Judul</th>
+                      <th>Prioritas</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recapTable"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+      <script src="app.backend.js"></script>
+  </body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manual Book - Portal Pengajuan Perbaikan</title>
+    <style>
+      :root {
+        --bg: #f6f8fb;
+        --card: #ffffff;
+        --text: #1b2430;
+        --muted: #5d6b82;
+        --line: #d8dfeb;
+        --accent: #0f4c81;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+
+      .wrap {
+        width: min(1000px, calc(100% - 24px));
+        margin: 20px auto 36px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+
+      .btn {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 12px;
+        background: #fff;
+        color: var(--text);
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .btn.primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 12px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin-top: 0;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+        margin-bottom: 8px;
+      }
+
+      h2 {
+        font-size: 1.15rem;
+        margin-bottom: 8px;
+        color: var(--accent);
+      }
+
+      p,
+      li {
+        color: var(--text);
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      code {
+        background: #eef2f8;
+        border: 1px solid #dde6f2;
+        border-radius: 4px;
+        padding: 1px 6px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      @media (max-width: 860px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        .actions {
+          display: none;
+        }
+
+        .wrap {
+          width: 100%;
+          margin: 0;
+        }
+
+        .card {
+          break-inside: avoid;
+          border: 1px solid #ccc;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <div class="actions">
+        <button class="btn primary" onclick="window.print()">Cetak / Simpan PDF</button>
+        <button class="btn" onclick="downloadHtml()">Unduh File Manual (HTML)</button>
+      </div>
+
+      <section class="card">
+        <h1>Manual Book Portal Pengajuan Perbaikan</h1>
+        <p class="muted">Versi dokumen: 14 April 2026</p>
+        <p>
+          Dokumen ini dipakai untuk panduan operasional aplikasi <strong>Portal Pengajuan Perbaikan</strong>
+          (mode localhost) oleh Admin dan User.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>1. Persiapan & Menjalankan Aplikasi</h2>
+        <ol>
+          <li>Buka folder aplikasi <code>repair-portal</code>.</li>
+          <li>Jalankan perintah <code>py backend.py</code>.</li>
+          <li>Buka browser ke <code>http://localhost:8000</code>.</li>
+        </ol>
+        <p><strong>Akun awal:</strong></p>
+        <ul>
+          <li>Admin: <code>admin</code> / <code>Admin123!</code></li>
+          <li>User: <code>user</code> / <code>User123!</code></li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>2. Alur Kerja User</h2>
+        <ol>
+          <li>Login sebagai user.</li>
+          <li>Buka tab <strong>Pengajuan</strong>.</li>
+          <li>Isi Judul, Kategori, Lokasi, Unit, Prioritas, dan Deskripsi.</li>
+          <li>Klik <strong>Kirim Pengajuan</strong>.</li>
+          <li>Pantau status di tabel pengajuan pribadi.</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2>3. Alur Kerja Admin</h2>
+        <ol>
+          <li>Login sebagai admin.</li>
+          <li>Buka tab <strong>Admin Panel</strong>.</li>
+          <li>Kelola status pengajuan: Diajukan, Diproses, Selesai, Ditolak.</li>
+          <li>Isi <strong>Alasan Proses</strong> saat status Diproses.</li>
+          <li>Pakai filter status/bulan/pencarian untuk monitoring.</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2>4. Manajemen Pengguna (Admin)</h2>
+        <div class="grid">
+          <article>
+            <h3>Tambah User</h3>
+            <ul>
+              <li>Isi Username, Nama, Role, Password.</li>
+              <li>Password wajib: 8+ karakter, huruf besar, huruf kecil, angka, simbol.</li>
+            </ul>
+          </article>
+          <article>
+            <h3>Kelola User</h3>
+            <ul>
+              <li><strong>Ubah Password</strong>: input manual sesuai kebijakan.</li>
+              <li><strong>Password Acak</strong>: sistem generate password kuat dan tampil sekali.</li>
+              <li><strong>Aktifkan/Nonaktifkan</strong>: kontrol akses login user.</li>
+              <li><strong>Hapus</strong>: hanya bisa jika user tidak punya riwayat pengajuan.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>5. Rekap & Laporan</h2>
+        <ul>
+          <li>Tab <strong>Rekap Bulanan</strong> untuk ringkasan berdasarkan bulan.</li>
+          <li>Admin bisa klik <strong>Unduh PDF</strong> untuk laporan bulanan.</li>
+          <li>Pengaturan kop surat dan penandatangan di menu admin.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>6. Audit Log</h2>
+        <ul>
+          <li>Menampilkan aktivitas penting admin (buat user, reset password, status user, update request, reset DB).</li>
+          <li>Bisa difilter berdasarkan Admin, Aksi, dan Tanggal.</li>
+          <li>Mendukung pagination (halaman).</li>
+          <li>Bisa diekspor ke CSV dan PDF.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>7. Backup & Restore Data</h2>
+        <p>File database utama adalah <code>repair-portal.db</code>.</p>
+        <ul>
+          <li><strong>Backup:</strong> salin file <code>repair-portal.db</code> ke folder cadangan.</li>
+          <li><strong>Restore:</strong> hentikan server, timpa <code>repair-portal.db</code> dengan file backup, lalu jalankan server lagi.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>8. Troubleshooting Cepat</h2>
+        <ul>
+          <li>Tidak bisa login: cek username/password dan status user (aktif/nonaktif).</li>
+          <li>Halaman tidak terbuka: pastikan <code>py backend.py</code> sedang berjalan.</li>
+          <li>PDF tidak keluar: refresh halaman, lalu coba ulang export.</li>
+          <li>Data tidak sesuai: cek filter bulan/status/pencarian pada tabel.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script>
+      function downloadHtml() {
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'manualbook-portal-perbaikan.html';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+    </script>
+  </body>
+</html>
